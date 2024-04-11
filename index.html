@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <title>Playground</title>
+    <link rel="stylesheet" href="bundle.css" type="text/css" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500|Material+Icons"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="lib.js"></script>
+  </head>
+  <body>
+    <!-- Top Controls -->
+    <div id="top-controls">
+      <div class="container l--page">
+        <div class="timeline-controls">
+          <button
+            class="mdl-button mdl-js-button mdl-button--icon ui-resetButton"
+            id="reset-button"
+            title="Reset the network"
+          >
+            <i class="material-icons">replay</i>
+          </button>
+          <button
+            class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored ui-playButton"
+            id="play-pause-button"
+            title="Run/Pause"
+          >
+            <i class="material-icons">play_arrow</i>
+            <i class="material-icons">pause</i>
+          </button>
+          <button
+            class="mdl-button mdl-js-button mdl-button--icon ui-stepButton"
+            id="next-step-button"
+            title="Step"
+          >
+            <i class="material-icons">skip_next</i>
+          </button>
+        </div>
+        <div class="control">
+          <span class="label">迭代(Epoch)</span>
+          <span class="value" id="iter-number"></span>
+        </div>
+        <div class="control ui-learningRate">
+          <label for="learningRate">学习率(Learning rate)</label>
+          <div class="select">
+            <select id="learningRate">
+              <option value="0.00001">0.00001</option>
+              <option value="0.0001">0.0001</option>
+              <option value="0.001">0.001</option>
+              <option value="0.003">0.003</option>
+              <option value="0.01">0.01</option>
+              <option value="0.03">0.03</option>
+              <option value="0.1">0.1</option>
+              <option value="0.3">0.3</option>
+              <option value="1">1</option>
+              <option value="3">3</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+        </div>
+        <div class="control ui-activation">
+          <label for="activations">激活函数(Activation)</label>
+          <div class="select">
+            <select id="activations">
+              <option value="relu">ReLU</option>
+              <option value="tanh">Tanh</option>
+              <option value="sigmoid">Sigmoid</option>
+              <option value="linear">Linear</option>
+            </select>
+          </div>
+        </div>
+        <div class="control ui-regularization">
+          <label for="regularizations">正则化(Regularization)</label>
+          <div class="select">
+            <select id="regularizations">
+              <option value="none">None</option>
+              <option value="L1">L1</option>
+              <option value="L2">L2</option>
+            </select>
+          </div>
+        </div>
+        <div class="control ui-regularizationRate">
+          <label for="regularRate">正则化率(Regularization rate)</label>
+          <div class="select">
+            <select id="regularRate">
+              <option value="0">0</option>
+              <option value="0.001">0.001</option>
+              <option value="0.003">0.003</option>
+              <option value="0.01">0.01</option>
+              <option value="0.03">0.03</option>
+              <option value="0.1">0.1</option>
+              <option value="0.3">0.3</option>
+              <option value="1">1</option>
+              <option value="3">3</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+        </div>
+        <div class="control ui-problem" label="这个实际上是输出的激活函数">
+          <label for="problem">问题类型(Problem type)</label>
+          <div class="select">
+            <select id="problem">
+              <option value="classification">Classification</option>
+              <option value="regression">Regression</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Part -->
+    <div id="main-part" class="l--page">
+      <!--  Data Column-->
+      <div class="column data">
+        <h4>
+          <span>Data</span>
+        </h4>
+        <div class="ui-dataset">
+          <p>Which dataset do you want to use?</p>
+          <div class="dataset-list">
+            <div class="dataset" title="Circle">
+              <canvas class="data-thumbnail" data-dataset="circle"></canvas>
+            </div>
+            <div class="dataset" title="Exclusive or">
+              <canvas class="data-thumbnail" data-dataset="xor"></canvas>
+            </div>
+            <div class="dataset" title="Gaussian">
+              <canvas class="data-thumbnail" data-dataset="gauss"></canvas>
+            </div>
+            <div class="dataset" title="Spiral">
+              <canvas class="data-thumbnail" data-dataset="spiral"></canvas>
+            </div>
+            <div class="dataset" title="Plane">
+              <canvas class="data-thumbnail" data-regDataset="reg-plane"></canvas>
+            </div>
+            <div class="dataset" title="Multi gaussian">
+              <canvas class="data-thumbnail" data-regDataset="reg-gauss"></canvas>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="ui-percTrainData">
+            <label for="percTrainData"
+              >Ratio of training to test data:&nbsp;&nbsp;<span class="value">XX</span>%</label
+            >
+            <p class="slider">
+              <input
+                class="mdl-slider mdl-js-slider"
+                type="range"
+                id="percTrainData"
+                min="10"
+                max="90"
+                step="10"
+              />
+            </p>
+          </div>
+          <div class="ui-noise">
+            <label for="noise">Noise:&nbsp;&nbsp;<span class="value">XX</span></label>
+            <p class="slider">
+              <input
+                class="mdl-slider mdl-js-slider"
+                type="range"
+                id="noise"
+                min="0"
+                max="50"
+                step="5"
+              />
+            </p>
+          </div>
+          <div class="ui-batchSize">
+            <label for="batchSize">Batch size:&nbsp;&nbsp;<span class="value">XX</span></label>
+            <p class="slider">
+              <input
+                class="mdl-slider mdl-js-slider"
+                type="range"
+                id="batchSize"
+                min="1"
+                max="30"
+                step="1"
+              />
+            </p>
+          </div>
+          <button class="basic-button" id="data-regen-button" title="Regenerate data">
+            Regenerate
+          </button>
+        </div>
+      </div>
+
+      <!-- Features Column -->
+      <div class="column features">
+        <h4>Features</h4>
+        <p>Which properties do you want to feed in?</p>
+        <div id="network">
+          <svg id="svg" width="510" height="450">
+            <defs>
+              <marker
+                id="markerArrow"
+                markerWidth="7"
+                markerHeight="13"
+                refX="1"
+                refY="6"
+                orient="auto"
+                markerUnits="userSpaceOnUse"
+              >
+                <path d="M2,11 L7,6 L2,2" />
+              </marker>
+            </defs>
+          </svg>
+          <!-- Hover card -->
+          <div id="hovercard">
+            <div style="font-size: 10px">Click anywhere to edit.</div>
+            <div>
+              <span class="type">Weight/Bias</span> is <span class="value">0.2</span
+              ><span><input type="number" /></span>.
+            </div>
+          </div>
+          <div class="callout thumbnail">
+            <svg viewBox="0 0 30 30">
+              <defs>
+                <marker
+                  id="arrow"
+                  markerWidth="5"
+                  markerHeight="5"
+                  refx="5"
+                  refy="2.5"
+                  orient="auto"
+                  markerUnits="userSpaceOnUse"
+                >
+                  <path d="M0,0 L5,2.5 L0,5 z" />
+                </marker>
+              </defs>
+              <path d="M12,30C5,20 2,15 12,0" marker-end="url(#arrow)" />
+            </svg>
+            <div class="label">
+              This is the output from one <b>neuron</b>. Hover to see it larger.
+            </div>
+          </div>
+          <div class="callout weights">
+            <svg viewBox="0 0 30 30">
+              <defs>
+                <marker
+                  id="arrow"
+                  markerWidth="5"
+                  markerHeight="5"
+                  refx="5"
+                  refy="2.5"
+                  orient="auto"
+                  markerUnits="userSpaceOnUse"
+                >
+                  <path d="M0,0 L5,2.5 L0,5 z" />
+                </marker>
+              </defs>
+              <path d="M12,30C5,20 2,15 12,0" marker-end="url(#arrow)" />
+            </svg>
+            <div class="label">
+              The outputs are mixed with varying <b>weights</b>, shown by the thickness of the
+              lines.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden Layers Column -->
+      <div class="column hidden-layers">
+        <h4>
+          <div class="ui-numHiddenLayers">
+            <button id="add-layers" class="mdl-button mdl-js-button mdl-button--icon">
+              <i class="material-icons">add</i>
+            </button>
+            <button id="remove-layers" class="mdl-button mdl-js-button mdl-button--icon">
+              <i class="material-icons">remove</i>
+            </button>
+          </div>
+          <span id="num-layers"></span>
+          <span id="layers-label"></span>
+        </h4>
+        <div class="bracket"></div>
+      </div>
+
+      <!-- Output Column -->
+      <div class="column output">
+        <h4>Output</h4>
+        <div class="metrics">
+          <div class="output-stats ui-percTrainData">
+            <span>Test loss</span>
+            <div class="value" id="loss-test"></div>
+          </div>
+          <div class="output-stats train">
+            <span>Training loss</span>
+            <div class="value" id="loss-train"></div>
+          </div>
+          <div id="linechart"></div>
+        </div>
+        <div id="heatmap"></div>
+        <div style="float: left; margin-top: 20px">
+          <div style="display: flex; align-items: center">
+            <!-- Gradient color scale -->
+            <div class="label" style="width: 105px; margin-right: 10px">
+              Colors shows data, neuron and weight values.
+            </div>
+            <svg width="150" height="30" id="colormap">
+              <defs>
+                <linearGradient id="gradient" x1="0%" y1="100%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#f59322" stop-opacity="1"></stop>
+                  <stop offset="50%" stop-color="#e8eaeb" stop-opacity="1"></stop>
+                  <stop offset="100%" stop-color="#0877bd" stop-opacity="1"></stop>
+                </linearGradient>
+              </defs>
+              <g class="core" transform="translate(3, 0)">
+                <rect width="144" height="10" style="fill: url('#gradient')"></rect>
+              </g>
+            </svg>
+          </div>
+          <br />
+          <div style="display: flex">
+            <label
+              class="ui-showTestData mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
+              for="show-test-data"
+            >
+              <input type="checkbox" id="show-test-data" class="mdl-checkbox__input" checked />
+              <span class="mdl-checkbox__label label">Show test data</span>
+            </label>
+            <label
+              class="ui-discretize mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect"
+              for="discretize"
+            >
+              <input type="checkbox" id="discretize" class="mdl-checkbox__input" checked />
+              <span class="mdl-checkbox__label label">Discretize output</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Article -->
+    <article id="article-text">
+      <div class="l--body" style="width: 550px">
+        <div class="hide-controls"></div>
+      </div>
+
+      <div class="l--body ml">
+        <h1>在神经元中添加激活函数的原因？</h1>
+        <p>因为很多数据不是线性可分的，如下第二张图</p>
+        <img src="/public/1.jpg" />
+        <img src="/public/2.jpg" />
+        <p>当数据不是线性可分时，就不能使用线性函数作为神经网络的输出，通常解决办法有两个：</p>
+        <p>1.做线性变换</p>
+        <p>2.引入非线性函数</p>
+
+        <h2>线性变换</h2>
+        <p>值 x, y 变成: x^2, y^2</p>
+        <img src="/public/3.jpg" />
+
+        <p>坐标轴 x, y 变成: x^2, y^2</p>
+        <img src="/public/4.jpg" />
+
+        <p>以上办法始终都是线性变换（矩阵换维）</p>
+
+        <p>有些问题，引入再多神经元，也是无法实现的。（线性变换只能做线性拼接）</p>
+        <img src="/public/5.jpg" />
+        <img src="/public/6.jpg" />
+
+        <p>其他方面，线性变换计算成本很高，特定问题需要用特定的线性变换。</p>
+        <p>因此，普遍是在神经元中添加非线性函数</p>
+
+        <h2>非线性</h2>
+        <p>
+          原则上可以是任何函数，只要是非线性的：Sigmoid, Tanh, ReLU, Leaky ReLU, Softmax, Binary
+          step, Identity, Swish ... ...
+        </p>
+        <p>实战经验就是试出来的。</p>
+
+        <h2>其他</h2>
+        <p>
+          输入层不使用激活函数，激活函数一般作用域隐藏层，输出层可选择是否使用激活函数。有些激活函数只适合作用于隐藏层，有些只适合输出层。
+        </p>
+        <p>
+          不同层有时使用不同的激活函数。例如：输出层可以根据要解决的问题类型，单独使用某种激活函数。
+        </p>
+        <p>
+          线性非线性问题：有些神经网络中也使用线性激活函数。例如：回归问题神经网络。（没细研究）
+        </p>
+        <p>函数选择要尽量简单，避免大量计算。</p>
+      </div>
+
+      <div class="l--body ml">
+        <h1>梯度</h1>
+        <p>
+          用通俗的语言讲梯度：瞎子下山，如何找到最优路径？每一步都走最陡的坡，当接近坡底时，开始走小碎步。
+        </p>
+        <p>
+          对应机器学习，就是目标值与预测值之间的差距。通过导函数计算出梯度，同时根据梯度及误差大小调整下降率。迭代进行。
+        </p>
+      </div>
+
+      <div class="l--body ml">
+        <h1>梯度消失和梯度爆炸</h1>
+        <p>为什么会产生梯度消失和梯度爆炸？</p>
+        <p>
+          神经网络训练的方法都是根据损失函数计算误差，通过梯度反向传播的方式，指导深度网络权值的更新优化。
+          其中将误差从末层往前传递的过程需要链式法则（Chain
+          Rule）的帮助，因此反向传播算法可以说是梯度下降在链式法则中的应用。
+          而链式法则是一个连乘的形式，所以当层数越深的时候，梯度将以指数形式传播。
+          梯度消失问题和梯度爆炸问题一般随着网络层数的增加会变得越来越明显。
+          在根据损失函数计算的误差通过梯度反向传播的方式对深度网络权值进行更新时，得到的梯度值接近0或特别大，也就是梯度消失或爆炸。
+          梯度消失或梯度爆炸在本质原理上其实是一样的。
+        </p>
+
+        <p>
+          <b>【梯度消失】</b>
+          一是在深层网络中，二是采用了不合适的损失函数，比如sigmoid。
+          当梯度消失发生时，接近于输出层的隐藏层由于其梯度相对正常，所以权值更新时也就相对正常，但是当越靠近输入层时，由于梯度消失现象，会导致靠近输入层的隐藏层权值更新缓慢或者更新停滞。
+          这就导致在训练时，只等价于后面几层的浅层网络的学习。
+        </p>
+
+        <p>
+          <b>【梯度爆炸】</b>
+          一般出现在深层网络和权值初始化值太大的情况下。在深层神经网络或循环神经网络中，误差的梯度可在更新中累积相乘。
+          如果网络层之间的梯度值大于
+          1.0，那么重复相乘会导致梯度呈指数级增长，梯度变的非常大，然后导致网络权重的大幅更新，并因此使网络变得不稳定。
+        </p>
+        <p>
+          梯度爆炸会伴随一些细微的信号，如： ①模型不稳定，导致更新过程中的损失出现显著变化；
+          ②训练过程中，在极端情况下，权重的值变得非常大，以至于溢出，导致模型损失变成 NaN等等。
+        </p>
+      </div>
+
+      <div class="l--body ml">
+        <h1>Loss function（损失函数）</h1>
+        <p>（本例源码里面叫 errorFunction ）</p>
+        <p>用来估量模型的预测值f(x)与真实值Y的不一致程度，通常是一个非负实值函数。</p>
+        <p>损失函数有很多种类型。</p>
+      </div>
+
+      <div class="l--body ml">
+        <h1>bias（偏置）</h1>
+        <img src="/public/7.jpg" />
+        <img src="/public/8.jpg" />
+        <p>
+          假如输入 X 的输入分布如图中蓝点（A集合）和红点（B集合）所示，要通过 Y ( &gt; 0.5 or &lt;
+          0.5，用 y = 0.5 分类) 来判断输入时在A内还是B内，很显然，要提高准确性，sigmoid 函数中的 W
+          系数需要学的很大，才能保证尽可能的判断准确。
+        </p>
+        <p>
+          但是如果一个测试样本在图中绿点所在的位置，很明显我们（人）可以将绿点判为红点所在的B集合，
+          但是通过训练学到的 W 是不能正确判断的（因为 绿点的 Y 值 &lt;
+          0.5）。这个时候似乎让soigmoid函数变得更陡也没法解决了。
+        </p>
+        <p>但是如果加一个bias呢。</p>
+        <img src="/public/9.jpg" />
+
+        <p>
+          【加了偏置拟合不是经过原点的分布】 偏置 b
+          在网络中的目的是使得当某一层layer的输入分布不是0为中心时给予偏置补偿（比如简单来看，要拟合
+          y=wx+b，b=100，那么用没有偏置的单层网络y=wx是怎么都无法拟合的！）
+          但是，当该层layer的输入经过归一化，也就是0为中心时，不要偏置也可以拟合（对应上述的例子，就是把所有数据移到原点附近，这时候y=wx就能拟合，拟合方向就行）通常情况下我们拿到的数据都不是0中心分布的，所以需要偏置b。
+        </p>
+        <p>
+          【偏置可以加速神经网络拟合】 加个偏置b 其实也可以看作是每个神经元多了个参数w0 * x0
+          （x0取值为1）。
+        </p>
+      </div>
+
+      <div class="l--body ml">
+        <h1>Learning rate （学习率）</h1>
+        <p>学习率就是每次参数更新的行进步长。</p>
+        <p>
+          步长过大则有可能越过了最优解，反复横跳不能得到最优效果。步长过小则不仅收敛效果慢，还有可能如下图一样陷入局部最优，这时候加大学习率才能越过山头找到真正的最优解。
+        </p>
+        <img src="/public/10.jpg" />
+
+        <p>
+          不同的模型也有不同的合适学习率可选择。甚至你可以用一些动态学习率的方法来在运算的过程中动态调整学习率，loss
+          下降明显时加大学习率，loss 趋缓时减小学习率。
+        </p>
+        <p>
+          本例使用固定学习率，但步长实际上也是动态的，因为会叠加误差导数，随着正确结果的逼近，误差会越来越小。
+        </p>
+      </div>
+
+      <div class="l--body ml">
+        <h1>Regularization（正则化）</h1>
+        <p>正则化这个翻译感觉不准确，可以理解成“约束”。主要用途是解决 过拟合。</p>
+        <p>本例有两种 L1 L2</p>
+        <p>L1 范数：权值向量 w 中各个元素的绝对值之和。</p>
+        <p>L2 范数：权值向量 w 中各个元素的平方和求平方根。</p>
+        <p>
+          不管是传统机器学习模型，还是深度学习模型，训练过程中都有越来越贴近训练数据的趋势，越贴近训练数据，在其他的预测数据上就越容易犯错，也就是过拟合。模型越复杂，越容易过拟合。regularization就是要限制模型的这个缺陷，有的是在模型设计阶段的regularization，有的是在模型训练阶段的regularization，目的都是防止过拟合。
+        </p>
+        <p>Regularization rate（正则化率）：正则化计算结果的系数。</p>
+      </div>
+
+      <div class="l--body ml">
+        <h1>问题类型（Problem type）</h1>
+        <p>本例都是介绍的分类问题，目的是给定一个数据，通过神经网络预测它属于哪个类别。</p>
+        <p>另一种问题类型叫回归问题，给定一个数据，通过神经网络预测它的数值。</p></p>
+      </div>
+
+      <div class="l--body ml"></div>
+    </article>
+
+    <script src="bundle.js"></script>
+  </body>
+</html>
